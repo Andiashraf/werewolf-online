@@ -842,10 +842,42 @@ export default function App() {
 }
 
 function HagoPlayersColumn({ players, startNumber, view }) {
+  const [activeBubbles, setActiveBubbles] = useState({});
+  const lastMessageCount = useRef(0);
+
+  useEffect(() => {
+    const allMsgs = view.messages || [];
+    if (allMsgs.length > lastMessageCount.current) {
+      const newMsgs = allMsgs.slice(lastMessageCount.current);
+      
+      newMsgs.forEach(m => {
+        // Hanya tampilkan chat pemain di avatar, bukan moderator
+        if (!m.isModerator && players.some(p => p.id === m.senderId)) {
+          setActiveBubbles(prev => ({ ...prev, [m.senderId]: m.message }));
+          setTimeout(() => {
+            setActiveBubbles(prev => {
+              const copy = { ...prev };
+              if (copy[m.senderId] === m.message) {
+                delete copy[m.senderId];
+              }
+              return copy;
+            });
+          }, 4000);
+        }
+      });
+    }
+    lastMessageCount.current = allMsgs.length;
+  }, [view.messages, players]);
+
   return (
     <div className="hago-col">
       {players.map((p, i) => (
-        <div key={p.id} className="hago-avatar-wrap">
+        <div key={p.id} className="hago-avatar-wrap" style={{ position: 'relative' }}>
+          {activeBubbles[p.id] && (
+            <div className="hago-speech-bubble">
+              {activeBubbles[p.id]}
+            </div>
+          )}
           <div className="hago-player-number">{startNumber + i}</div>
           <div className={`hago-avatar-box ${!p.alive ? 'is-dead' : ''}`}>
             {p.alive ? <User size={30} color="rgba(255,255,255,0.8)" /> : <Ghost size={30} color="rgba(255,255,255,0.4)" />}
@@ -867,21 +899,28 @@ function ChatAndVoiceBar({ view }) {
     const allMsgs = view.messages || [];
     if (allMsgs.length > lastMessageCount.current) {
       const newMsgs = allMsgs.slice(lastMessageCount.current).map(m => ({ ...m, localId: Math.random() }));
-      setVisibleMessages(prev => [...prev, ...newMsgs].slice(-15));
       
-      newMsgs.forEach(m => {
+      // Saat di dalam game (bukan lobby/setup/game_over), overlay HANYA untuk moderator.
+      // Saat di lobby, tampilkan semuanya di overlay.
+      const isGameActive = view.phase !== 'lobby' && view.phase !== 'setup' && view.phase !== 'game_over';
+      const overlayMsgs = isGameActive ? newMsgs.filter(m => m.isModerator) : newMsgs;
+      
+      setVisibleMessages(prev => [...prev, ...overlayMsgs].slice(-15));
+      
+      overlayMsgs.forEach(m => {
         setTimeout(() => {
           setVisibleMessages(prev => prev.filter(x => x.localId !== m.localId));
         }, 5000);
       });
     }
     lastMessageCount.current = allMsgs.length;
-  }, [view.messages]);
+  }, [view.messages, view.phase]);
 
   const myPlayer = view.players?.find(p => p.id === view.viewerPlayerId);
   const isDead = myPlayer ? !myPlayer.alive : false;
-  // Hanya Moderator yang diizinkan menggunakan text chat sebagai Announcement
-  const canChat = view.isModerator;
+  
+  // Pemain bisa ketik saat lobby, setup, game_over, atau saat diskusi jika masih hidup.
+  const canChat = view.isModerator || view.phase === 'lobby' || view.phase === 'setup' || view.phase === 'game_over' || (view.phase === 'discussion' && !isDead);
 
   function sendChat() {
     if (!msg.trim()) return;
