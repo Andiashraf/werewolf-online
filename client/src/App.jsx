@@ -832,11 +832,11 @@ export default function App() {
             />
           </div>
         )}
-
-        {view.phase !== 'lobby' && view.phase !== 'setup' && (
-          <ChatAndVoiceBar view={view} />
-        )}
       </div>
+
+      {view.phase !== 'lobby' && view.phase !== 'setup' && (
+        <ChatAndVoiceBar view={view} />
+      )}
     </div>
   );
 }
