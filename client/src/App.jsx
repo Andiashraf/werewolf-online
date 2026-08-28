@@ -286,6 +286,7 @@ function RevealScreen({ view }) {
   }
 
   if (view.isModerator) {
+    const allReady = view.readyCount === view.totalCount;
     return (
       <div className="mw-pass-wrap">
         <div className="mw-pass-card">
@@ -293,8 +294,8 @@ function RevealScreen({ view }) {
           <p className="mw-display mw-pass-title">Nunggu Player Ready</p>
           <p className="mw-pass-names">{view.readyCount} / {view.totalCount} udah ngintip role</p>
           <p className="mw-pass-hint">Tiap player cek role di HP masing-masing ya, awas ngintip!</p>
-          <button type="button" className="mw-btn mw-btn-lg mw-btn-amber" onClick={() => socket.emit('start_night_1')}>
-            Gas Malam Pertama
+          <button type="button" className="mw-btn mw-btn-lg mw-btn-amber" disabled={!allReady} style={!allReady ? { opacity: 0.5, cursor: 'not-allowed' } : {}} onClick={() => socket.emit('start_night_1')}>
+            {allReady ? 'Gas Malam Pertama' : `Nunggu ${view.totalCount - view.readyCount} player lagi...`}
           </button>
         </div>
       </div>
@@ -729,7 +730,25 @@ export default function App() {
   useEffect(() => {
     function onUpdate(v) { setView(v); }
     socket.on('state_update', onUpdate);
-    return () => socket.off('state_update', onUpdate);
+
+    // Auto-reconnect: when socket reconnects, rejoin room automatically
+    function onReconnect() {
+      const saved = loadSession();
+      if (saved?.code && saved?.token) {
+        emitAck('join_room', { code: saved.code, token: saved.token }).then(res => {
+          if (res.ok) {
+            setCode(res.code);
+            setView(res.view);
+          }
+        });
+      }
+    }
+    socket.on('connect', onReconnect);
+
+    return () => {
+      socket.off('state_update', onUpdate);
+      socket.off('connect', onReconnect);
+    };
   }, []);
 
   useEffect(() => {
@@ -834,7 +853,7 @@ export default function App() {
         )}
       </div>
 
-      {view.phase !== 'lobby' && view.phase !== 'setup' && (
+      {view.phase !== 'setup' && (
         <ChatAndVoiceBar view={view} />
       )}
     </div>
@@ -955,7 +974,13 @@ function ChatAndVoiceBar({ view }) {
           </div>
         ) : (
           <div className="hago-chat-input-wrap" style={{ opacity: 0.5, justifyContent: 'center' }}>
-            <span style={{ fontSize: '13px', fontStyle: 'italic', color: '#aaa' }}>Hanya Pemandu yang bisa ketik pesan...</span>
+            <span style={{ fontSize: '13px', fontStyle: 'italic', color: '#aaa' }}>
+              {isDead ? 'Hantu gabisa ngomong...' 
+                : view.phase === 'night' || view.phase === 'resolution' ? 'Ssstt... lagi malam, diem dulu.' 
+                : view.phase === 'voting' ? 'Voting dulu, chat nanti aja.'
+                : view.phase === 'reveal' ? 'Cek role dulu baru ngobrol.'
+                : 'Chat belum tersedia saat ini.'}
+            </span>
           </div>
         )}
       </div>

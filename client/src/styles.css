@@ -53,13 +53,35 @@ body { background: var(--bg-void); font-family: 'Work Sans', sans-serif; }
 
 .mw-root.is-night {
   background: #000;
+  transition: background 1.2s ease;
 }
 .mw-root.is-night .mw-bg-premium-art::after {
   content: ''; position: absolute; inset: 0;
   background: radial-gradient(circle at center, rgba(5,5,10,0.5) 0%, rgba(0,0,0,0.95) 100%);
   z-index: 1;
+  transition: background 1.2s ease;
 }
-.mw-root:not(.is-night) .mw-bg-premium-art::after {
+
+/* Day / Morning / Discussion / Voting Theme — warm golden-blue gradient */
+.mw-root.is-day {
+  background: linear-gradient(180deg, #0a1628 0%, #1a2e5c 30%, #2a4a7a 60%, #3a6090 100%);
+  transition: background 1.2s ease;
+}
+.mw-root.is-day .mw-bg-premium-art::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 10%, rgba(255, 179, 71, 0.15) 0%, transparent 60%);
+  z-index: 1;
+  transition: background 1.2s ease;
+}
+
+/* Phase-specific accents */
+.mw-root.phase-morning { background: linear-gradient(180deg, #1a1e3a 0%, #2c3d6e 25%, #4a6fa0 55%, #7a9cc0 100%); }
+.mw-root.phase-morning .mw-bg-premium-art::after {
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 200, 100, 0.25) 0%, transparent 50%);
+}
+.mw-root.phase-discussion { background: linear-gradient(180deg, #0e1a35 0%, #1c3568 30%, #2a5090 60%, #1a3560 100%); }
+
+.mw-root:not(.is-night):not(.is-day) .mw-bg-premium-art::after {
   content: ''; position: absolute; inset: 0;
   background: radial-gradient(circle at center, transparent 0%, rgba(5,5,5,0.6) 100%);
   z-index: 1;

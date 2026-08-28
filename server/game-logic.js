@@ -276,6 +276,8 @@ export function reducer(state, action) {
     }
     case 'START_NIGHT_1': {
       if (!state.game || state.game.phase !== 'reveal') return state;
+      // Block if not all players have confirmed seeing their role
+      if (state.game.readyPlayers.length < state.game.players.length) return state;
       const order = buildNightTurnOrder(state.game.players, 1, state.game.witchPotions);
       const withLog = {
         ...state.game,

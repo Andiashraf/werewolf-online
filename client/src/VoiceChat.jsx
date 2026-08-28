@@ -5,7 +5,11 @@ import { Mic, MicOff, Volume2, VolumeX } from 'lucide-react';
 const ICE_SERVERS = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' }
+    { urls: 'stun:stun1.l.google.com:19302' },
+    // Free TURN relays from OpenRelay (metered.ca)
+    { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
+    { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' },
   ]
 };
 
@@ -131,16 +135,26 @@ export default function VoiceChat({ view, myPlayerId }) {
 
     pc.ontrack = (event) => {
       // Attach audio stream to a new Audio element
-      if (!audioContextRef.current[targetPlayerId]) {
-        const audio = new Audio();
-        audio.srcObject = event.streams[0];
-        audio.autoplay = true;
-        audioContextRef.current[targetPlayerId] = audio;
-      }
+      const audio = audioContextRef.current[targetPlayerId] || new Audio();
+      audio.srcObject = event.streams[0];
+      audio.autoplay = true;
+      audioContextRef.current[targetPlayerId] = audio;
+      // Explicitly call play() to handle browser autoplay policy
+      audio.play().catch(() => {
+        // Autoplay blocked — will be unmuted on next user interaction
+        const unlock = () => {
+          audio.play().catch(() => {});
+          document.removeEventListener('click', unlock);
+          document.removeEventListener('touchstart', unlock);
+        };
+        document.addEventListener('click', unlock, { once: true });
+        document.addEventListener('touchstart', unlock, { once: true });
+      });
     };
 
     pc.oniceconnectionstatechange = () => {
-      if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
+      const st = pc.iceConnectionState;
+      if (st === 'disconnected' || st === 'failed') {
         pc.close();
         delete peersRef.current[targetPlayerId];
         connectedPeersRef.current.delete(targetPlayerId);
@@ -148,6 +162,17 @@ export default function VoiceChat({ view, myPlayerId }) {
           audioContextRef.current[targetPlayerId].pause();
           delete audioContextRef.current[targetPlayerId];
         }
+        // Auto-retry connection after a short delay
+        setTimeout(() => {
+          if (!peersRef.current[targetPlayerId] && stream) {
+            connectedPeersRef.current.add(targetPlayerId);
+            if (myPlayerId < targetPlayerId) {
+              createPeer(targetPlayerId, true);
+            } else {
+              socket.emit('webrtc_signal', { targetPlayerId, signal: { type: 'request_offer' } });
+            }
+          }
+        }, 2000);
       }
     };
 
