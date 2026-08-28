@@ -789,7 +789,7 @@ export default function App() {
 
   return (
     <div className={`mw-root phase-${viewPhase} ${isNight ? 'is-night' : 'is-day'}`}>
-      <div className="hago-bg-art" />
+      <div className="mw-bg-premium-art" />
       <div className="mw-container">
         <header className="mw-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div className="mw-header-inner">
