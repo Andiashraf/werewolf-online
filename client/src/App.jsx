@@ -18,7 +18,7 @@ const NIGHT_TURN_META = {
   witch: { label: 'Witch', icon: FlaskConical },
 };
 const PHASE_META = {
-  reveal: { label: 'Pembagian Peran', icon: Eye }, night: { label: 'Malam', icon: Moon },
+  reveal: { label: 'Bagi Role', icon: Eye }, night: { label: 'Malam', icon: Moon },
   resolution: { label: 'Malam', icon: Moon }, morning: { label: 'Pagi', icon: Sunrise },
   discussion: { label: 'Diskusi', icon: MessageCircle }, voting: { label: 'Voting', icon: Scale },
   game_over: { label: 'Selesai', icon: Trophy },
@@ -67,7 +67,7 @@ function LobbyScreen({ onJoined }) {
       <div className="mw-lobby-left">
         <div className="mw-eyebrow-pill">ONLINE MULTIPLAYER</div>
         <h1 className="mw-title-huge">Malam<br/>Serigala</h1>
-        <p className="mw-subtitle-elegant">Experience the ultimate game of deception, trust, and betrayal. Will you survive the night?</p>
+        <p className="mw-subtitle-elegant">Game fitnah-fitnahan paling sus se-RT. Yakin lo bisa survive sampai pagi?</p>
       </div>
 
       <div className="mw-lobby-right stagger-fade-up">
@@ -78,8 +78,8 @@ function LobbyScreen({ onJoined }) {
                 <div className="mw-card-content">
                   <div className="mw-card-icon-wrap"><DoorOpen size={24} strokeWidth={1.5} /></div>
                   <div className="mw-card-text">
-                    <p className="mw-card-title">Buat Room</p>
-                    <p className="mw-card-desc">Jadi Pemandu, atur peran & jalan cerita.</p>
+                    <p className="mw-card-title">Bikin Room</p>
+                    <p className="mw-card-desc">Jadi bandar/admin, atur role & plot twist.</p>
                   </div>
                   <div className="mw-card-arrow-wrap">
                     <div className="mw-card-arrow">↗</div>
@@ -94,7 +94,7 @@ function LobbyScreen({ onJoined }) {
                   <div className="mw-card-icon-wrap"><LogIn size={24} strokeWidth={1.5} /></div>
                   <div className="mw-card-text">
                     <p className="mw-card-title">Join Room</p>
-                    <p className="mw-card-desc">Masukkan kode dari Pemandu untuk main.</p>
+                    <p className="mw-card-desc">Masukin kode dari admin biar bisa nimbrung.</p>
                   </div>
                   <div className="mw-card-arrow-wrap">
                     <div className="mw-card-arrow">↗</div>
@@ -108,16 +108,16 @@ function LobbyScreen({ onJoined }) {
         {mode === 'create' && (
           <div className="mw-glass-panel">
             <div className="mw-glass-inner">
-              <p className="mw-eyebrow-pill">BUAT ROOM</p>
-              <p className="mw-lobby-text-premium">Kamu akan bertindak sebagai Pemandu (Moderator). Siapkan strategi terbaik untuk pemainmu.</p>
+              <p className="mw-eyebrow-pill">BIKIN ROOM</p>
+              <p className="mw-lobby-text-premium">Lo bakal jadi admin yang ngatur jalannya game. Siapin mental buat dengerin bacotan player.</p>
               
               <button type="button" className="mw-btn-premium group" disabled={busy} onClick={handleCreate}>
-                <span className="mw-btn-text">{busy ? 'Membangkitkan...' : 'Mulai Sesi Baru'}</span>
+                <span className="mw-btn-text">{busy ? 'Bikin room...' : 'Mulai Sesi Baru'}</span>
                 <div className="mw-btn-arrow-wrap">
                   <div className="mw-btn-arrow">↗</div>
                 </div>
               </button>
-              <button type="button" className="mw-link-btn-premium" onClick={() => setMode(null)}>Batal</button>
+              <button type="button" className="mw-link-btn-premium" onClick={() => setMode(null)}>Cancel</button>
             </div>
           </div>
         )}
@@ -128,17 +128,17 @@ function LobbyScreen({ onJoined }) {
               <p className="mw-eyebrow-pill">JOIN ROOM</p>
               
               <div className="mw-input-group">
-                <input className="mw-input-premium" placeholder="Kode Room (mis. AB12C)" value={code} onChange={(e) => setCode(e.target.value)} />
-                <input className="mw-input-premium mt-3" placeholder="Nama Kamu" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') handleJoin(); }} />
+                <input className="mw-input-premium" placeholder="Kode Room (contoh: AB12C)" value={code} onChange={(e) => setCode(e.target.value)} />
+                <input className="mw-input-premium mt-3" placeholder="Nama Lo (yang gaul)" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') handleJoin(); }} />
               </div>
 
               <button type="button" className="mw-btn-premium mt-6 group" disabled={busy} onClick={handleJoin}>
-                <span className="mw-btn-text">{busy ? 'Menyusup...' : 'Gabung Sekarang'}</span>
+                <span className="mw-btn-text">{busy ? 'Loading...' : 'Join Sekarang'}</span>
                 <div className="mw-btn-arrow-wrap">
                   <div className="mw-btn-arrow">↗</div>
                 </div>
               </button>
-              <button type="button" className="mw-link-btn-premium" onClick={() => setMode(null)}>Batal</button>
+              <button type="button" className="mw-link-btn-premium" onClick={() => setMode(null)}>Cancel</button>
             </div>
           </div>
         )}
@@ -184,8 +184,8 @@ function SetupScreen({ view, code }) {
 
       {view.isModerator ? (
         <section className="mw-panel">
-          <p className="mw-eyebrow">Susun Peran</p>
-          <h2 className="mw-display mw-panel-title">Komposisi Peran</h2>
+          <p className="mw-eyebrow">Atur Role</p>
+          <h2 className="mw-display mw-panel-title">Susunan Role</h2>
           <div className="mw-role-grid">
             {Object.entries(roleConfig).map(([key, count]) => {
               const Icon = ROLE_ICONS[key];
@@ -210,21 +210,21 @@ function SetupScreen({ view, code }) {
           </div>
           <p className={`mw-match-note ${canAssign ? 'ok' : players.length === 0 ? '' : 'warn'}`}>
             {players.length === 0
-              ? `Menunggu pemain join — total peran saat ini ${totalRoles}.`
+              ? `Nunggu bocah-bocah join — total peran saat ini ${totalRoles}.`
               : canAssign
-              ? `Siap! ${totalRoles} peran untuk ${players.length} pemain.`
-              : `Total peran (${totalRoles}) belum sama dengan jumlah pemain (${players.length}).`}
+              ? `Mantul! ${totalRoles} role buat ${players.length} player.`
+              : `Total role (${totalRoles}) belum sama dengan jumlah pemain (${players.length}).`}
           </p>
 
           <div className="mw-bulk-block" style={{ marginTop: 16 }}>
             {!bulkMode ? (
-              <button type="button" className="mw-link-btn" onClick={() => setBulkMode(true)}>Tambahkan pemain manual (opsional)</button>
+              <button type="button" className="mw-link-btn" onClick={() => setBulkMode(true)}>Add player manual (kalo ada yang gaptek)</button>
             ) : (
               <>
-                <textarea className="mw-textarea" rows={4} placeholder={'Nama pemain, satu per baris\n(buat yang belum sempat join sendiri)'} value={bulkText} onChange={(e) => setBulkText(e.target.value)} />
+                <textarea className="mw-textarea" rows={4} placeholder={'Nama player, satu per baris\n(buat yang gaptek join sendiri)'} value={bulkText} onChange={(e) => setBulkText(e.target.value)} />
                 <div className="mw-bulk-actions">
-                  <button type="button" className="mw-btn mw-btn-amber" onClick={() => { socket.emit('add_bulk_players', { text: bulkText }); setBulkText(''); setBulkMode(false); }}>Tambahkan</button>
-                  <button type="button" className="mw-btn mw-btn-ghost" onClick={() => { setBulkMode(false); setBulkText(''); }}>Batal</button>
+                  <button type="button" className="mw-btn mw-btn-amber" onClick={() => { socket.emit('add_bulk_players', { text: bulkText }); setBulkText(''); setBulkMode(false); }}>Add</button>
+                  <button type="button" className="mw-btn mw-btn-ghost" onClick={() => { setBulkMode(false); setBulkText(''); }}>Cancel</button>
                 </div>
               </>
             )}
@@ -232,15 +232,15 @@ function SetupScreen({ view, code }) {
         </section>
       ) : (
         <section className="mw-panel">
-          <p className="mw-eyebrow">Menunggu Pemandu</p>
-          <p className="mw-lobby-text">Pemandu sedang menyiapkan komposisi peran. Kamu sudah masuk daftar pemain di bawah.</p>
+          <p className="mw-eyebrow">Nunggu Admin</p>
+          <p className="mw-lobby-text">Admin lagi nyiapin role. Nama lo udah masuk list di bawah yak.</p>
         </section>
       )}
 
       <section className="mw-panel">
-        <h2 className="mw-display mw-panel-title">Pemain ({players.length})</h2>
+        <h2 className="mw-display mw-panel-title">Player ({players.length})</h2>
         {players.length === 0 ? (
-          <div className="mw-empty-board">Belum ada yang join. Bagikan kode room di atas.</div>
+          <div className="mw-empty-board">Masih sepi cuy. Share kode room ke circle lo.</div>
         ) : (
           <div className="mw-chip-row">
             {players.map((p) => (
@@ -258,7 +258,7 @@ function SetupScreen({ view, code }) {
       {view.isModerator && (
         <div className="mw-assign-block">
           <button type="button" className="mw-btn mw-btn-lg mw-btn-amber" disabled={!canAssign} onClick={() => socket.emit('assign_roles')}>
-            <Shuffle size={17} /> Acak &amp; Bagi Peran
+            <Shuffle size={17} /> Gacha Role &amp; Gas!
           </button>
         </div>
       )}
@@ -290,11 +290,11 @@ function RevealScreen({ view }) {
       <div className="mw-pass-wrap">
         <div className="mw-pass-card">
           <Eye size={28} />
-          <p className="mw-display mw-pass-title">Menunggu Pemain Siap</p>
-          <p className="mw-pass-names">{view.readyCount} / {view.totalCount} sudah lihat peran</p>
-          <p className="mw-pass-hint">Setiap pemain melihat perannya sendiri di HP masing-masing.</p>
+          <p className="mw-display mw-pass-title">Nunggu Player Ready</p>
+          <p className="mw-pass-names">{view.readyCount} / {view.totalCount} udah ngintip role</p>
+          <p className="mw-pass-hint">Tiap player cek role di HP masing-masing ya, awas ngintip!</p>
           <button type="button" className="mw-btn mw-btn-lg mw-btn-amber" onClick={() => socket.emit('start_night_1')}>
-            Mulai Malam Pertama
+            Gas Malam Pertama
           </button>
         </div>
       </div>
@@ -307,12 +307,12 @@ function RevealScreen({ view }) {
 
   return (
     <div className="mw-reveal-wrap">
-      <p className="mw-eyebrow">Peranmu</p>
+      <p className="mw-eyebrow">Role Lo</p>
       <div className={`mw-flip-card ${flipped ? 'is-flipped' : ''}`} onClick={() => !flipped && setFlipped(true)}>
         <div className="mw-flip-inner">
           <div className="mw-flip-front">
             <Moon size={26} />
-            <p className="mw-flip-hint" style={{ marginTop: 14 }}>Ketuk untuk lihat peranmu</p>
+            <p className="mw-flip-hint" style={{ marginTop: 14 }}>Tap buat liat role lo</p>
           </div>
           <div className="mw-flip-back">
             <div className={`mw-card-icon team-${def.team}`}><Icon size={24} /></div>
@@ -327,7 +327,7 @@ function RevealScreen({ view }) {
           <EyeOff size={16} /> Siap
         </button>
       )}
-      {view.youAreReady && <p className="mw-ready-note">✓ Kamu sudah siap. Menunggu pemain lain & Pemandu memulai malam...</p>}
+      {view.youAreReady && <p className="mw-ready-note">✓ ✓ Lo udah ready. Sabar nunggu yang lain kelar...</p>}
     </div>
   );
 }
@@ -349,7 +349,7 @@ function CupidAction({ view }) {
   }
   return (
     <div className="mw-action-wrap">
-      <p className="mw-action-title">Pilih 2 pemain untuk dijodohkan (sehidup semati)</p>
+      <p className="mw-action-title">Pilih 2 player buat di-ship (sesurvive semati)</p>
       <div className="mw-target-grid">
         {alive.map((p) => (
           <button key={p.id} type="button" className={`mw-target-btn ${a === p.id || b === p.id ? 'is-selected' : ''}`} onClick={() => toggle(p.id)}>{p.name}</button>
@@ -357,7 +357,7 @@ function CupidAction({ view }) {
       </div>
       <button type="button" className="mw-btn mw-btn-lg mw-btn-amber" disabled={!a || !b}
         onClick={() => socket.emit('submit_night_action', { role: 'cupid', payload: { aId: a, bId: b } })}>
-        Jodohkan &amp; Lanjut
+        Ship &amp; Lanjut
       </button>
     </div>
   );
@@ -369,27 +369,27 @@ function SeerAction({ view }) {
   if (checked) {
     return (
       <div className="mw-action-wrap">
-        <p className="mw-action-title">Hasil ramalan</p>
+        <p className="mw-action-title">Hasil kepoan</p>
         <div className="mw-seer-result">
           <p className="mw-seer-name">{checked.name}</p>
           <p className="mw-seer-role">{checked.roleLabel}</p>
         </div>
         <button type="button" className="mw-btn mw-btn-lg mw-btn-amber"
           onClick={() => socket.emit('submit_night_action', { role: 'seer', payload: { targetId: checked.id } })}>
-          Sembunyikan &amp; Lanjut
+          Hide &amp; Lanjut
         </button>
       </div>
     );
   }
   return (
     <div className="mw-action-wrap">
-      <p className="mw-action-title">Pilih pemain untuk diperiksa</p>
+      <p className="mw-action-title">Pilih player yang mau lo kepoin rolenya</p>
       <div className="mw-target-grid">
         {alive.map((p) => (
           <button key={p.id} type="button" className="mw-target-btn" onClick={() => setChecked({ id: p.id, name: p.name, roleLabel: ROLE_LABEL_ID[p.role] || '???' })}>{p.name}</button>
         ))}
       </div>
-      <p className="mw-action-hint">Hasil ramalan cuma butuh role asli — server sudah tahu, tapi label akan muncul setelah kamu memilih.</p>
+      <p className="mw-action-hint">Hasil kepoan cuma butuh role asli — server sudah tahu, tapi label akan muncul setelah kamu memilih.</p>
     </div>
   );
 }
@@ -398,13 +398,13 @@ function GuardAction({ view }) {
   const alive = view.players.filter((p) => p.alive);
   return (
     <div className="mw-action-wrap">
-      <p className="mw-action-title">Pilih pemain untuk dilindungi malam ini</p>
+      <p className="mw-action-title">Pilih player yang mau lo beking malam ini</p>
       <div className="mw-target-grid">
         {alive.map((p) => (
           <button key={p.id} type="button" className="mw-target-btn" onClick={() => socket.emit('submit_night_action', { role: 'guard', payload: { targetId: p.id } })}>{p.name}</button>
         ))}
       </div>
-      <button type="button" className="mw-link-btn" onClick={() => socket.emit('submit_night_action', { role: 'guard', payload: { targetId: null } })}>Lewati (jangan lindungi siapa pun)</button>
+      <button type="button" className="mw-link-btn" onClick={() => socket.emit('submit_night_action', { role: 'guard', payload: { targetId: null } })}>Skip (biarin aja dah)</button>
     </div>
   );
 }
@@ -423,7 +423,7 @@ function WerewolfAction({ view }) {
   const ready = needTwo ? targets.length === 2 : targets.length === 1;
   return (
     <div className="mw-action-wrap">
-      <p className="mw-action-title">{needTwo ? 'Alpha baru gugur — pilih 2 target untuk gigitan ganda' : 'Pilih 1 target untuk diserang'}</p>
+      <p className="mw-action-title">{needTwo ? 'Alpha tewas — pilih 2 mangsa buat double kill' : 'Pilih 1 mangsa buat di-kill'}</p>
       <div className="mw-target-grid">
         {options.map((p) => (
           <button key={p.id} type="button" className={`mw-target-btn ${targets.includes(p.id) ? 'is-selected' : ''}`} onClick={() => toggle(p.id)}>{p.name}</button>
@@ -431,7 +431,7 @@ function WerewolfAction({ view }) {
       </div>
       <button type="button" className="mw-btn mw-btn-lg mw-btn-amber" disabled={!ready}
         onClick={() => socket.emit('submit_night_action', { role: 'werewolf', payload: { targetIds: targets } })}>
-        Serang &amp; Lanjut
+        Kill &amp; Lanjut
       </button>
     </div>
   );
@@ -447,13 +447,13 @@ function WitchAction({ view }) {
   return (
     <div className="mw-action-wrap">
       {wolfTargetPlayers.length > 0 ? (
-        <p className="mw-action-title">Werewolf menyerang: {wolfTargetPlayers.map((p) => p.name).join(' & ')}</p>
+        <p className="mw-action-title">Werewolf nge-kill: {wolfTargetPlayers.map((p) => p.name).join(' & ')}</p>
       ) : (
-        <p className="mw-action-title">Werewolf tidak menyerang siapa pun malam ini</p>
+        <p className="mw-action-title">Werewolf lagi puasa nge-kill malam ini</p>
       )}
       {canSave && wolfTargetPlayers.length > 0 && (
         <div className="mw-witch-section">
-          <p className="mw-witch-label">Ramuan Penolong (sisa 1x)</p>
+          <p className="mw-witch-label">Potion Heal (sisa 1x)</p>
           <div className="mw-target-grid">
             {wolfTargetPlayers.map((p) => (
               <button key={p.id} type="button" className={`mw-target-btn ${save === p.id ? 'is-selected' : ''}`} onClick={() => setSave(save === p.id ? null : p.id)}>{p.name}</button>
@@ -463,7 +463,7 @@ function WitchAction({ view }) {
       )}
       {canPoison && (
         <div className="mw-witch-section">
-          <p className="mw-witch-label">Ramuan Racun (sisa 1x, opsional)</p>
+          <p className="mw-witch-label">Potion Racun (sisa 1x, opsional)</p>
           <div className="mw-target-grid">
             {poisonOptions.map((p) => (
               <button key={p.id} type="button" className={`mw-target-btn ${poison === p.id ? 'is-selected' : ''}`} onClick={() => setPoison(poison === p.id ? null : p.id)}>{p.name}</button>
@@ -473,7 +473,7 @@ function WitchAction({ view }) {
       )}
       <button type="button" className="mw-btn mw-btn-lg mw-btn-amber"
         onClick={() => socket.emit('submit_night_action', { role: 'witch', payload: { saveTargetId: save, poisonTargetId: poison } })}>
-        Konfirmasi &amp; Lanjut
+        Confirm &amp; Lanjut
       </button>
     </div>
   );
@@ -518,8 +518,8 @@ function ResolutionScreen({ view }) {
       <div className="mw-pass-wrap">
         <div className="mw-pass-card">
           <Target size={28} />
-          <p className="mw-display mw-pass-title">{view.pendingRevenge?.hunterName} Gugur!</p>
-          <p className="mw-pass-hint">Menunggu Hunter memutuskan siapa yang ditembak sebelum wafat...</p>
+          <p className="mw-display mw-pass-title">{view.pendingRevenge?.hunterName} Wasted!</p>
+          <p className="mw-pass-hint">Nunggu Hunter nembak orang sebelum mokad...</p>
         </div>
       </div>
     );
@@ -529,14 +529,14 @@ function ResolutionScreen({ view }) {
     <div className="mw-pass-wrap">
       <div className="mw-pass-card">
         <Target size={28} />
-        <p className="mw-display mw-pass-title">Kamu Gugur!</p>
-        <p className="mw-pass-hint">Sebagai Hunter, boleh langsung menembak mati 1 pemain lain sebelum wafat.</p>
+        <p className="mw-display mw-pass-title">Kamu Wasted!</p>
+        <p className="mw-pass-hint">Sebagai Hunter, lo berhak bawa 1 orang buat mokad bareng.</p>
         <div className="mw-target-grid" style={{ marginTop: 14 }}>
           {options.map((p) => (
             <button key={p.id} type="button" className="mw-target-btn" onClick={() => socket.emit('resolve_revenge', { targetId: p.id })}>{p.name}</button>
           ))}
         </div>
-        <button type="button" className="mw-link-btn" onClick={() => socket.emit('resolve_revenge', { targetId: null })}>Lewati (tidak menembak)</button>
+        <button type="button" className="mw-link-btn" onClick={() => socket.emit('resolve_revenge', { targetId: null })}>Skip (gajadi nembak)</button>
       </div>
     </div>
   );
@@ -554,11 +554,11 @@ function ModeratorLogPanel({ view }) {
   return (
     <div className="mw-modlog">
       <button type="button" className="mw-link-btn" onClick={() => setOpen((v) => !v)}>
-        <Lock size={12} /> {open ? 'Sembunyikan' : 'Lihat'} Catatan Moderator
+        <Lock size={12} /> {open ? 'Hide' : 'Intip'} Bocoran Admin
       </button>
       {open && (
         <div className="mw-modlog-panel">
-          <p className="mw-modlog-warn">Rahasia — jangan buka kalau pemain lain sedang melihat layar ini.</p>
+          <p className="mw-modlog-warn">Top Secret — jangan buka kalo ada yang ngintip layar lo.</p>
           <div className="mw-log-list">
             {[...(view.moderatorLog || [])].reverse().map((e) => <p key={e.id} className="mw-log-entry">{e.text}</p>)}
           </div>
@@ -575,7 +575,7 @@ function PhaseBar({ view }) {
   return (
     <div className="mw-phasebar">
       <span className="mw-phasebar-badge"><Icon size={14} /> {meta.label}{view.phase !== 'game_over' && view.phase !== 'reveal' ? ` ${view.round}` : ''}</span>
-      <span className="mw-phasebar-alive"><Users size={13} /> {aliveCount} hidup</span>
+      <span className="mw-phasebar-alive"><Users size={13} /> {aliveCount} survive</span>
     </div>
   );
 }
@@ -585,10 +585,10 @@ function MorningScreen({ view }) {
     <div className="mw-morning-wrap">
       <div className="mw-morning-card">
         <Sunrise size={26} />
-        <p className="mw-display mw-morning-title">Pagi Hari — setelah Malam {view.round}</p>
+        <p className="mw-display mw-morning-title">Pagi Cuy — abis Malam {view.round}</p>
         <div className="mw-morning-log">
           {view.lastNightDeaths.length === 0 ? (
-            <p className="mw-morning-line">Malam berlalu dengan damai. Tidak ada yang tewas.</p>
+            <p className="mw-morning-line">Malam yang chill. Gada yang mokad semalam.</p>
           ) : (
             view.lastNightDeaths.map((d, i) => {
               const p = view.players.find((pl) => pl.id === d.playerId);
@@ -598,7 +598,7 @@ function MorningScreen({ view }) {
         </div>
         {view.isModerator && (
           <button type="button" className="mw-btn mw-btn-lg mw-btn-amber" onClick={() => socket.emit('advance_to_discussion')}>
-            Lanjut ke Diskusi
+            Gas Bacot (Diskusi)
           </button>
         )}
       </div>
@@ -618,7 +618,7 @@ function DiscussionScreen({ view }) {
           <div className="mw-timer-controls">
             <button type="button" className="mw-btn mw-btn-ghost" onClick={() => socket.emit('adjust_discussion_time', { delta: -30 })}>-30s</button>
             <button type="button" className="mw-btn mw-btn-amber" onClick={() => socket.emit('toggle_discussion_timer')}>
-              {view.discussionRunning ? <><Pause size={15} /> Jeda</> : <><Play size={15} /> Mulai</>}
+              {view.discussionRunning ? <><Pause size={15} /> Pause</> : <><Play size={15} /> Mulai</>}
             </button>
             <button type="button" className="mw-btn mw-btn-ghost" onClick={() => socket.emit('adjust_discussion_time', { delta: 30 })}>+30s</button>
           </div>
@@ -626,7 +626,7 @@ function DiscussionScreen({ view }) {
       </div>
       {view.isModerator && (
         <div className="mw-assign-block">
-          <button type="button" className="mw-btn mw-btn-lg mw-btn-amber" onClick={() => socket.emit('start_voting')}>Mulai Voting</button>
+          <button type="button" className="mw-btn mw-btn-lg mw-btn-amber" onClick={() => socket.emit('start_voting')}>Gas Voting</button>
         </div>
       )}
     </div>
@@ -645,7 +645,7 @@ function VotingScreen({ view }) {
 
   return (
     <div className="mw-voting-wrap">
-      <p className="mw-eyebrow" style={{ textAlign: 'center' }}>Voting — Malam {view.round} ({Object.keys(votes).length}/{view.aliveCount} sudah vote)</p>
+      <p className="mw-eyebrow" style={{ textAlign: 'center' }}>Voting — Malam {view.round} ({Object.keys(votes).length}/{view.aliveCount} udah nge-vote)</p>
       <div className="mw-vote-list">
         {sorted.map((p) => {
           const voters = Object.entries(votes).filter(([, targetId]) => targetId === p.id).map(([voterId]) => alive.find((pl) => pl.id === voterId)?.name || '?');
@@ -660,7 +660,7 @@ function VotingScreen({ view }) {
                 {iAmAlive && p.id !== view.viewerPlayerId && (
                   <button type="button" className={`mw-vote-cast-btn ${myVote === p.id ? 'is-selected' : ''}`}
                     onClick={() => socket.emit('cast_vote', { voterId: view.viewerPlayerId, targetId: p.id })}>
-                    {myVote === p.id ? 'Vote-mu' : 'Vote'}
+                    {myVote === p.id ? 'Pilihan Lo' : 'Vote'}
                   </button>
                 )}
               </div>
@@ -672,18 +672,18 @@ function VotingScreen({ view }) {
         <div className="mw-assign-block">
           {tied.length > 1 ? (
             <div className="mw-tie-block">
-              <p className="mw-assign-hint">Hasil seri: {tied.map((p) => p.name).join(', ')}</p>
+              <p className="mw-assign-hint">Seri cuy: {tied.map((p) => p.name).join(', ')}</p>
               <div className="mw-target-grid">
                 {tied.map((p) => (
                   <button key={p.id} type="button" className="mw-target-btn" onClick={() => socket.emit('finalize_vote', { eliminatedId: p.id })}>{p.name}</button>
                 ))}
               </div>
-              <button type="button" className="mw-link-btn" onClick={() => socket.emit('finalize_vote', { eliminatedId: null })}>Tidak ada yang dieliminasi</button>
+              <button type="button" className="mw-link-btn" onClick={() => socket.emit('finalize_vote', { eliminatedId: null })}>Skip (gada yang di-kick)</button>
             </div>
           ) : (
             <button type="button" className="mw-btn mw-btn-lg mw-btn-amber"
               onClick={() => socket.emit('finalize_vote', { eliminatedId: maxVotes > 0 ? tied[0]?.id : null })}>
-              Selesai Voting
+              Bungkus Voting
             </button>
           )}
         </div>
@@ -694,9 +694,9 @@ function VotingScreen({ view }) {
 
 function GameOverScreen({ view }) {
   const winnerText = {
-    joker: `JOKER MENANG! ${view.winner.name} berhasil digantung dan menang sendirian.`,
-    warga: 'TIM WARGA MENANG! Semua Werewolf berhasil dilenyapkan.',
-    werewolf: 'TIM WEREWOLF MENANG! Jumlah Werewolf menyamai warga yang tersisa.',
+    joker: `JOKER MENANG! ${view.winner.name} berhasil nge-troll warga dan menang sendirian.`,
+    warga: 'WARGA WIN! Semua Werewolf berhasil di-wipe out.',
+    werewolf: 'WEREWOLF WIN! GGWP, warga udah abis dibantai.',
   }[view.winner.team];
 
   return (
@@ -705,10 +705,10 @@ function GameOverScreen({ view }) {
       {view.isModerator && (
         <div className="mw-bottom-actions">
           <button type="button" className="mw-btn mw-btn-amber" onClick={() => socket.emit('reshuffle_same_players')}>
-            <Shuffle size={14} /> Main Lagi (pemain sama)
+            <Shuffle size={14} /> Rematch (circle yang sama)
           </button>
           <button type="button" className="mw-btn mw-btn-ghost" onClick={() => socket.emit('reset_game')}>
-            <Trash2 size={14} /> Reset Total
+            <Trash2 size={14} /> Reset All
           </button>
         </div>
       )}
@@ -755,7 +755,7 @@ export default function App() {
   }, []);
 
   function handleLeaveRoom() {
-    if (window.confirm('Yakin ingin keluar dari room ini?')) {
+    if (window.confirm('Yakin mau cabut dari room ini?')) {
       if (view && !view.isModerator && view.viewerPlayerId) {
         socket.emit('remove_player', { id: view.viewerPlayerId });
       }
@@ -796,12 +796,12 @@ export default function App() {
           <div className="mw-header-inner">
             <Moon size={24} className="mw-moon-icon" />
             <div>
-              <h1 className="mw-display mw-title">Malam Serigala</h1>
-              <p className="mw-subtitle">{view.isModerator ? 'Kamu Pemandu' : 'Werewolf online'}</p>
+              <h1 className="mw-display mw-title">Werewolf</h1>
+              <p className="mw-subtitle">{view.isModerator ? 'Lo Admin' : 'Werewolf no delay'}</p>
             </div>
           </div>
           <button type="button" className="mw-btn-ghost" style={{ padding: '8px 12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }} onClick={handleLeaveRoom}>
-            <LogOut size={16} /> Keluar
+            <LogOut size={16} /> Cabut
           </button>
         </header>
 
