@@ -16,6 +16,7 @@ export default function VoiceChat({ view, myPlayerId }) {
   
   const peersRef = useRef({}); // { playerId: RTCPeerConnection }
   const audioContextRef = useRef({}); // { playerId: HTMLAudioElement }
+  const connectedPeersRef = useRef(new Set()); // Track connection attempts
 
   // Game rules for muting
   const isNight = view.phase === 'night' || view.phase === 'resolution';
@@ -59,16 +60,25 @@ export default function VoiceChat({ view, myPlayerId }) {
     const handleSignal = async ({ senderPlayerId, signal }) => {
       if (senderPlayerId === myPlayerId) return;
 
+      if (signal.type === 'request_offer') {
+        if (myPlayerId < senderPlayerId) {
+          if (peersRef.current[senderPlayerId]) {
+            peersRef.current[senderPlayerId].close();
+          }
+          createPeer(senderPlayerId, true);
+        }
+        return;
+      }
+
       let pc = peersRef.current[senderPlayerId];
 
       if (signal.type === 'offer') {
-        if (!pc) pc = createPeer(senderPlayerId);
         // Important: if we are in have-local-offer, we have a glare condition.
-        // Because of deterministic initiator below, this should theoretically never happen,
-        // but just in case, we ignore incoming offers if we already created one (we are initiator).
-        if (pc.signalingState === 'have-local-offer' && myPlayerId < senderPlayerId) {
-          return;
-        }
+        if (myPlayerId < senderPlayerId) return;
+        
+        if (pc) pc.close();
+        pc = createPeer(senderPlayerId, false);
+        
         await pc.setRemoteDescription(new RTCSessionDescription(signal));
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
@@ -87,11 +97,15 @@ export default function VoiceChat({ view, myPlayerId }) {
     if (!view.isModerator) others.push('MODERATOR');
 
     others.forEach(id => {
-      if (!peersRef.current[id]) {
-        // Deterministic initiator: only create offer if my ID is lexicographically smaller.
-        // MODERATOR is always < p_xxx, so Moderator always initiates to everyone.
+      if (!connectedPeersRef.current.has(id)) {
+        connectedPeersRef.current.add(id);
+        
+        // Deterministic initiator
         if (myPlayerId < id) {
           createPeer(id, true); // Create and send offer
+        } else {
+          // Ask them to initiate because we might have joined late
+          socket.emit('webrtc_signal', { targetPlayerId: id, signal: { type: 'request_offer' } });
         }
       }
     });
@@ -129,6 +143,7 @@ export default function VoiceChat({ view, myPlayerId }) {
       if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
         pc.close();
         delete peersRef.current[targetPlayerId];
+        connectedPeersRef.current.delete(targetPlayerId);
         if (audioContextRef.current[targetPlayerId]) {
           audioContextRef.current[targetPlayerId].pause();
           delete audioContextRef.current[targetPlayerId];
