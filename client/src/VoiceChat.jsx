@@ -63,6 +63,12 @@ export default function VoiceChat({ view, myPlayerId }) {
 
       if (signal.type === 'offer') {
         if (!pc) pc = createPeer(senderPlayerId);
+        // Important: if we are in have-local-offer, we have a glare condition.
+        // Because of deterministic initiator below, this should theoretically never happen,
+        // but just in case, we ignore incoming offers if we already created one (we are initiator).
+        if (pc.signalingState === 'have-local-offer' && myPlayerId < senderPlayerId) {
+          return;
+        }
         await pc.setRemoteDescription(new RTCSessionDescription(signal));
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
@@ -82,14 +88,18 @@ export default function VoiceChat({ view, myPlayerId }) {
 
     others.forEach(id => {
       if (!peersRef.current[id]) {
-        createPeer(id, true); // Create and send offer
+        // Deterministic initiator: only create offer if my ID is lexicographically smaller.
+        // MODERATOR is always < p_xxx, so Moderator always initiates to everyone.
+        if (myPlayerId < id) {
+          createPeer(id, true); // Create and send offer
+        }
       }
     });
 
     return () => {
       socket.off('webrtc_signal', handleSignal);
     };
-  }, [myPlayerId, stream]);
+  }, [myPlayerId, stream, view.players, view.isModerator]);
 
   function createPeer(targetPlayerId, isInitiator = false) {
     const pc = new RTCPeerConnection(ICE_SERVERS);
