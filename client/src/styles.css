@@ -169,12 +169,13 @@ body { background: var(--bg-void); font-family: 'Work Sans', sans-serif; }
  * BOTTOM CHAT & VOICE BAR
  * ------------------------------------------------------------- */
 .hago-bottom-bar {
-  position: absolute; bottom: 0; left: 0; right: 0;
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 600px;
   padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
   background: rgba(14, 18, 38, 0.85);
   backdrop-filter: blur(20px);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex; gap: 12px; align-items: center; z-index: 20;
+  display: flex; gap: 12px; align-items: center; z-index: 50;
   box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
 }
 
@@ -196,12 +197,12 @@ body { background: var(--bg-void); font-family: 'Work Sans', sans-serif; }
 }
 .hago-chat-send:active { transform: scale(0.92); }
 
-/* Chat Overlay */
 .hago-chat-overlay {
-  position: absolute; bottom: 80px; left: 16px; right: 16px;
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 600px; padding: 0 16px;
   height: 220px; pointer-events: none;
   display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;
-  z-index: 15; overflow: hidden;
+  z-index: 45; overflow: hidden;
 }
 .hago-chat-msg {
   background: rgba(0,0,0,0.5); padding: 6px 12px; border-radius: 12px;
