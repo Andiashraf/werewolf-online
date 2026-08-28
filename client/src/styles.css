@@ -1,0 +1,384 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  /* Hago Style Color Palette */
+  --bg-void: #060913; 
+  --bg-panel: rgba(14, 21, 35, 0.7);
+  --bg-panel-solid: #0B111D;
+  
+  --ink: #1F170E; 
+  --moon: #F2F4F7; 
+  --moon-dim: #8C9DAE; 
+  
+  --hago-blue: #1A3C8B;
+  --hago-blue-light: #2A5BD3;
+  --hago-green: #00D222;
+  
+  --lantern: #FFB347; 
+  --lantern-deep: #B06D14;
+  
+  --blood: #D92D2D; 
+  --blood-soft: #5C1212; 
+  
+  --line: rgba(255, 255, 255, 0.1);
+  --shadow-glow: 0 0 20px rgba(42, 91, 211, 0.4);
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; overflow: hidden; /* Hago is an app-like full screen */ }
+body { background: var(--bg-void); font-family: 'Work Sans', sans-serif; }
+
+/* -------------------------------------------------------------
+ * ANIMATIONS
+ * ------------------------------------------------------------- */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse-ring { 
+  0% { transform: scale(1); opacity: 0.8; } 
+  50% { transform: scale(1.15); opacity: 0.2; } 
+  100% { transform: scale(1); opacity: 0.8; } 
+}
+@keyframes slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* -------------------------------------------------------------
+ * APP CONTAINER (Mobile Frame)
+ * ------------------------------------------------------------- */
+.mw-root {
+  position: relative; 
+  height: 100vh; width: 100vw;
+  background: radial-gradient(circle at 50% -20%, #172a5a 0%, var(--bg-void) 80%); 
+  color: var(--moon);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+.mw-root.is-night {
+  background: radial-gradient(circle at 50% -20%, #080c1f 0%, #020306 80%);
+}
+
+.mw-container {
+  flex: 1;
+  display: flex; flex-direction: column;
+  position: relative;
+  max-width: 600px; margin: 0 auto; width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding-bottom: 40px;
+}
+
+/* Background Atmosphere (Bats/Moon) */
+.hago-bg-art {
+  position: absolute; top: 0; left: 0; right: 0; height: 150px;
+  background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="20" r="15" fill="%23FFF" opacity="0.2"/></svg>');
+  background-size: cover; background-position: center;
+  pointer-events: none; z-index: 0; opacity: 0.5;
+}
+
+/* -------------------------------------------------------------
+ * HEADER & LOBBY
+ * ------------------------------------------------------------- */
+.mw-header { z-index: 10; padding: 20px 16px; text-align: center; }
+.mw-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 700; margin: 0; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+.mw-room-code-bar { background: rgba(0,0,0,0.4); border-radius: 999px; padding: 6px 14px; display: inline-flex; align-items: center; gap: 10px; font-size: 12px; margin-top: 10px; border: 1px solid var(--line); }
+
+/* Buttons & Inputs */
+.mw-btn { 
+  background: var(--hago-blue-light); color: #FFF; border: none; border-radius: 999px;
+  padding: 12px 24px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s;
+  box-shadow: 0 4px 12px rgba(42, 91, 211, 0.4);
+}
+.mw-btn:active { transform: scale(0.95); }
+.mw-btn-amber { background: linear-gradient(180deg, var(--lantern), var(--lantern-deep)); color: #120A01; box-shadow: 0 4px 12px rgba(255,179,71,0.3); }
+.mw-input { background: rgba(0,0,0,0.5); border: 1px solid var(--line); border-radius: 12px; color: #FFF; padding: 12px; font-size: 14px; width: 100%; outline: none; }
+.mw-input:focus { border-color: var(--hago-blue-light); }
+
+/* -------------------------------------------------------------
+ * HAGO GAME BOARD (Avatar Ring)
+ * ------------------------------------------------------------- */
+.hago-game-area {
+  flex: 1; display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px; position: relative; z-index: 1;
+}
+
+/* Left & Right Columns */
+.hago-col { display: flex; flex-direction: column; gap: 20px; width: 80px; }
+
+/* Player Avatar */
+.hago-avatar-wrap { position: relative; text-align: center; }
+.hago-avatar-box {
+  width: 64px; height: 64px; border-radius: 12px;
+  background: var(--bg-panel-solid); border: 2px solid var(--hago-blue);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto; position: relative; overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  transition: 0.2s;
+}
+.hago-avatar-box.is-dead { filter: grayscale(1); opacity: 0.5; border-color: #555; }
+.hago-avatar-wrap:hover .hago-avatar-box { transform: scale(1.05); border-color: var(--lantern); }
+.hago-avatar-wrap.is-selected .hago-avatar-box { border-color: var(--hago-green); box-shadow: 0 0 15px var(--hago-green); }
+
+/* The number badge on top-left of avatar */
+.hago-player-number {
+  position: absolute; top: -8px; left: -8px;
+  background: var(--lantern); color: #111;
+  width: 20px; height: 20px; border-radius: 50%;
+  font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 2;
+}
+
+.hago-player-name { font-size: 11px; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; text-shadow: 0 1px 3px #000; }
+
+.hago-action-btn {
+  background: var(--hago-green); color: #FFF; border: none; border-radius: 4px;
+  font-size: 10px; font-weight: 700; padding: 4px 0; width: 100%; margin-top: 4px;
+  cursor: pointer; box-shadow: 0 2px 4px rgba(0,210,34,0.3); text-transform: uppercase;
+}
+.hago-action-btn:active { transform: scale(0.9); }
+
+/* Central Action Hub */
+.hago-center-hub {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+}
+.hago-magic-ring {
+  width: 140px; height: 140px; border-radius: 50%;
+  border: 4px solid rgba(134, 115, 184, 0.4);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; margin-bottom: 20px;
+}
+.hago-magic-ring::before {
+  content: ''; position: absolute; inset: -10px; border-radius: 50%;
+  border: 2px dashed rgba(134, 115, 184, 0.6);
+  animation: spin 10s linear infinite;
+}
+.hago-hub-icon { color: #FFF; filter: drop-shadow(0 0 10px var(--arcane)); }
+.hago-hub-text { font-size: 16px; font-weight: 600; text-shadow: 0 2px 4px #000; }
+.hago-hub-timer { font-size: 28px; font-family: 'Space Mono', monospace; font-weight: 700; color: var(--lantern); margin-top: 8px; }
+
+/* -------------------------------------------------------------
+ * BOTTOM CHAT & VOICE BAR
+ * ------------------------------------------------------------- */
+.hago-bottom-bar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: rgba(14, 18, 38, 0.85);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex; gap: 12px; align-items: center; z-index: 20;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+}
+
+.hago-voice-controls { display: flex; gap: 8px; }
+.hago-circle-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: none;
+  background: var(--hago-blue); color: #FFF; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: 0.2s; flex-shrink: 0;
+}
+.hago-circle-btn:active { transform: scale(0.9); }
+.hago-circle-btn.is-muted { background: #333; color: #888; }
+
+.hago-chat-input-wrap { flex: 1; display: flex; align-items: center; background: rgba(0,0,0,0.4); border-radius: 999px; padding: 4px 12px; border: 1px solid var(--hago-blue); }
+.hago-chat-input-wrap input { background: transparent; border: none; color: #FFF; font-size: 14px; width: 100%; outline: none; padding: 8px 0; }
+.hago-chat-send {
+  background: var(--hago-blue); border: none; color: #FFF; font-weight: 700;
+  padding: 0 16px; border-radius: 20px; font-size: 12px; cursor: pointer;
+  box-shadow: 0 4px 10px rgba(45,140,240,0.3); transition: transform 0.15s;
+}
+.hago-chat-send:active { transform: scale(0.92); }
+
+/* Chat Overlay */
+.hago-chat-overlay {
+  position: absolute; bottom: 80px; left: 16px; right: 16px;
+  height: 220px; pointer-events: none;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 6px;
+  z-index: 15; overflow: hidden;
+}
+.hago-chat-msg {
+  background: rgba(0,0,0,0.5); padding: 6px 12px; border-radius: 12px;
+  font-size: 13px; max-width: 80%; display: inline-block; pointer-events: auto;
+  animation: slide-up 0.2s ease-out; backdrop-filter: blur(4px);
+}
+.hago-chat-name { font-weight: 700; color: var(--lantern); margin-right: 6px; }
+.hago-chat-name.mod { color: var(--blood); }
+.hago-chat-name.dead { color: #888; text-decoration: line-through; }
+
+/* Modal Panels (Setup/GameOver) */
+.hago-modal {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.8); z-index: 50;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  backdrop-filter: blur(8px);
+}
+.hago-modal-content {
+  background: var(--bg-panel-solid); border-radius: 16px; padding: 24px;
+  width: 100%; max-width: 400px; border: 1px solid var(--hago-blue);
+  max-height: 85vh; overflow-y: auto;
+}
+
+/* -------------------------------------------------------------
+ * PANELS & SETUP SCREEN
+ * ------------------------------------------------------------- */
+.mw-panel {
+  background: var(--bg-panel);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 20px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1), 0 10px 30px rgba(0,0,0,0.5);
+  backdrop-filter: blur(16px);
+}
+.mw-eyebrow {
+  font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--hago-blue-light);
+  font-weight: 700; margin-bottom: 8px;
+}
+.mw-panel-title {
+  font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; margin-top: 0; margin-bottom: 20px;
+}
+.mw-role-grid { display: flex; flex-direction: column; gap: 12px; }
+.mw-role-row {
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line);
+}
+.mw-role-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+.mw-role-icon.team-werewolf { background: var(--blood-soft); color: var(--blood); }
+.mw-role-icon.team-warga { background: rgba(0,210,34,0.2); color: var(--hago-green); }
+.mw-role-icon.team-netral { background: rgba(255,179,71,0.2); color: var(--lantern); }
+.mw-role-label { flex: 1; margin-left: 12px; font-size: 14px; font-weight: 600; }
+
+.mw-stepper { display: flex; align-items: center; background: rgba(0,0,0,0.5); border-radius: 999px; overflow: hidden; }
+.mw-stepper button { background: none; border: none; color: #FFF; padding: 6px 12px; cursor: pointer; font-weight: 700; }
+.mw-stepper button:hover { background: rgba(255,255,255,0.1); }
+.mw-stepper button:active { transform: scale(0.9); }
+.mw-stepper .mw-mono { padding: 0 8px; font-size: 14px; min-width: 24px; text-align: center; }
+
+.mw-role-totals { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; font-size: 13px; font-weight: 600; color: var(--moon-dim); }
+.mw-role-totals .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+.dot-werewolf { background: var(--blood); }
+.dot-warga { background: var(--hago-green); }
+.dot-netral { background: var(--lantern); }
+.mw-total-strong { color: #FFF; font-weight: 700; }
+
+.mw-match-note { font-size: 13px; margin-top: 12px; color: var(--lantern); }
+.mw-match-note.ok { color: var(--hago-green); }
+.mw-match-note.warn { color: var(--blood); }
+
+.mw-bulk-block { margin-top: 20px; border-top: 1px dashed var(--line); padding-top: 20px; }
+.mw-textarea { background: rgba(0,0,0,0.5); border: 1px solid var(--line); border-radius: 8px; color: #FFF; padding: 12px; width: 100%; font-family: inherit; resize: vertical; }
+.mw-bulk-actions { display: flex; gap: 10px; margin-top: 12px; }
+
+/* Lobby / Buttons */
+.mw-lobby-choice { display: flex; gap: 16px; padding: 0 16px; margin-top: 40px; }
+.mw-lobby-card {
+  flex: 1; background: var(--bg-panel); border: 1px solid var(--hago-blue); border-radius: 16px;
+  padding: 24px 16px; text-align: center; color: #FFF; cursor: pointer; transition: 0.2s;
+}
+.mw-lobby-card:hover { border-color: var(--hago-blue-light); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(42,91,211,0.2); }
+.mw-lobby-card-title { font-size: 16px; font-weight: 700; margin: 12px 0 8px; }
+.mw-lobby-card-desc { font-size: 12px; color: var(--moon-dim); margin: 0; }
+.mw-link-btn { background: none; border: none; color: var(--moon-dim); text-decoration: underline; cursor: pointer; font-size: 13px; margin-top: 16px; }
+.mw-link-btn:hover { color: #FFF; }
+.mw-btn-ghost { background: transparent; border: 1px solid var(--line); color: var(--moon-dim); box-shadow: none; }
+.mw-btn-ghost:hover { background: rgba(255,255,255,0.1); color: #FFF; }
+.mw-btn-ghost:active { transform: scale(0.95); }
+.mw-btn-lg { width: 100%; padding: 16px; font-size: 16px; }
+
+.mw-icon-btn { background: none; border: none; color: var(--moon-dim); cursor: pointer; display: flex; align-items: center; padding: 4px; }
+.mw-icon-btn:hover { color: #FFF; }
+.mw-mono { font-family: 'Space Mono', monospace; }
+.mw-room-code { color: var(--lantern); font-weight: 700; font-size: 14px; }
+
+.mw-phasebar {
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--bg-panel-solid); padding: 8px 16px; border-radius: 999px;
+  border: 1px solid var(--hago-blue); margin-bottom: 20px; font-size: 12px; font-weight: 700;
+}
+.mw-phasebar-badge { display: flex; align-items: center; gap: 6px; color: var(--lantern); }
+.mw-phasebar-alive { display: flex; align-items: center; gap: 6px; color: var(--hago-green); }
+
+.mw-timer-card { background: rgba(0,0,0,0.3); border-radius: 12px; padding: 16px; text-align: center; border: 1px solid var(--line); margin-bottom: 20px; width: 100%; }
+.mw-timer-display { font-size: 32px; font-weight: 700; color: var(--lantern); margin: 0 0 12px 0; }
+.mw-timer-controls { display: flex; gap: 8px; justify-content: center; }
+
+.mw-modlog { padding: 16px; text-align: center; }
+.mw-modlog-panel { background: rgba(0,0,0,0.8); border-radius: 12px; padding: 16px; margin-top: 10px; border: 1px solid var(--blood-soft); text-align: left; }
+.mw-modlog-warn { color: var(--blood); font-size: 11px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; }
+.mw-log-list { max-height: 200px; overflow-y: auto; }
+.mw-log-entry { font-size: 12px; color: var(--moon); margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
+
+.mw-voting-wrap { text-align: center; width: 100%; }
+.mw-vote-list { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; text-align: left; }
+.mw-vote-row { background: rgba(0,0,0,0.4); padding: 10px 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--line); }
+.mw-vote-row.is-leading { border-color: var(--blood); background: var(--blood-soft); }
+.mw-vote-name { font-weight: 600; font-size: 14px; }
+.mw-vote-voters { font-size: 11px; color: var(--moon-dim); margin-top: 4px; }
+.mw-vote-controls { display: flex; align-items: center; gap: 12px; }
+.mw-vote-count { font-size: 16px; font-weight: 700; color: var(--lantern); }
+.mw-vote-cast-btn { background: var(--bg-panel-solid); color: #FFF; border: 1px solid var(--hago-blue); border-radius: 4px; padding: 4px 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
+.mw-vote-cast-btn.is-selected { background: var(--hago-green); border-color: var(--hago-green); }
+.mw-vote-cast-btn:active { transform: scale(0.9); }
+
+.mw-assign-block { margin-top: 24px; text-align: center; }
+.mw-tie-block { background: rgba(0,0,0,0.5); padding: 16px; border-radius: 12px; border: 1px solid var(--blood); }
+.mw-target-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; }
+.mw-target-btn { background: var(--bg-panel); color: #FFF; border: 1px solid var(--hago-blue); padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+.mw-target-btn:hover { background: var(--hago-blue); }
+.mw-target-btn:active { transform: scale(0.95); }
+
+/* -------------------------------------------------------------
+ * OPENING ANIMATION (DRAMATIC VS)
+ * ------------------------------------------------------------- */
+.hago-opening-overlay {
+  position: absolute; inset: 0; z-index: 100;
+  background: radial-gradient(circle at center, #111, #000);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #FFF; overflow: hidden;
+}
+
+.opening-text { text-align: center; }
+.opening-text h1 { font-family: 'Fraunces', serif; font-size: 32px; color: var(--blood); margin: 0; text-shadow: 0 0 20px var(--blood); }
+.opening-text p { font-size: 16px; color: var(--moon-dim); letter-spacing: 2px; }
+
+.fade-in-out { animation: fadeInOut 1s ease-in-out forwards; }
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: scale(0.9); }
+  20% { opacity: 1; transform: scale(1); }
+  80% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.1); }
+}
+
+.vs-screen {
+  width: 100%; height: 100%; display: flex; flex-direction: column; position: relative;
+}
+
+.vs-team {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+}
+.evil-team { background: linear-gradient(180deg, rgba(217, 45, 45, 0.2) 0%, transparent 100%); }
+.good-team { background: linear-gradient(0deg, rgba(0, 210, 34, 0.1) 0%, transparent 100%); }
+
+.slide-in-top { animation: slideInTop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.slide-in-bottom { animation: slideInBottom 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+@keyframes slideInTop { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+@keyframes slideInBottom { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.vs-divider {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-size: 48px; font-weight: 900; font-style: italic; color: #FFF;
+  text-shadow: 0 0 20px #000, 0 0 30px var(--hago-blue-light); z-index: 10;
+}
+.zoom-in { animation: zoomIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; animation-delay: 0.5s; }
+@keyframes zoomIn { from { transform: translate(-50%, -50%) scale(5); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
+
+.team-title { font-family: 'Fraunces', serif; font-size: 20px; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px; }
+.team-cards { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; max-width: 400px; }
+
+.opening-card {
+  width: 70px; height: 90px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+  background: var(--bg-panel-solid); border: 2px solid var(--line);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+.evil-card { border-color: var(--blood); color: var(--blood); box-shadow: 0 0 15px rgba(217, 45, 45, 0.4); }
+.good-card { border-color: var(--hago-green); color: var(--hago-green); box-shadow: 0 0 15px rgba(0, 210, 34, 0.2); }
+.opening-card span { font-size: 10px; font-weight: 700; text-align: center; overflow: hidden; text-overflow: ellipsis; max-width: 100%; padding: 0 4px; color: #FFF; }
+
+.stage-outro .vs-screen { animation: fadeOut 1s ease forwards; }
+@keyframes fadeOut { to { opacity: 0; transform: scale(1.1); filter: blur(10px); } }

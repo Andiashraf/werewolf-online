@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: werewolf-server
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    # Important: Set the rootDirectory to where your server code is located.
+    rootDirectory: server
