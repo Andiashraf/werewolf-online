@@ -760,8 +760,7 @@ export default function App() {
         socket.emit('remove_player', { id: view.viewerPlayerId });
       }
       clearSession();
-      setView(null);
-      setCode(null);
+      window.location.reload();
     }
   }
 
