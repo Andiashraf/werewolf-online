@@ -25,7 +25,11 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 app.get('*', (_req, res) => res.sendFile(path.join(CLIENT_DIST, 'index.html')));
 
 const httpServer = createServer(app);
-const io = new Server(httpServer, { cors: { origin: '*' } });
+const io = new Server(httpServer, { 
+  cors: { origin: '*' },
+  pingTimeout: 60000,
+  pingInterval: 15000
+});
 
 // ---------------------------------------------------------------------------
 // Helpers

@@ -29,6 +29,12 @@ export function clearSession() {
 
 export function emitAck(event, payload) {
   return new Promise((resolve) => {
-    socket.emit(event, payload, (res) => resolve(res));
+    socket.timeout(10000).emit(event, payload, (err, res) => {
+      if (err) {
+        resolve({ ok: false, error: 'Koneksi lambat atau terputus (Timeout).' });
+      } else {
+        resolve(res);
+      }
+    });
   });
 }
