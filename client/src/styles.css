@@ -382,3 +382,156 @@ body { background: var(--bg-void); font-family: 'Work Sans', sans-serif; }
 
 .stage-outro .vs-screen { animation: fadeOut 1s ease forwards; }
 @keyframes fadeOut { to { opacity: 0; transform: scale(1.1); filter: blur(10px); } }
+
+/* -------------------------------------------------------------
+ * PREMIUM LOBBY UI (High-End Visual Design)
+ * ------------------------------------------------------------- */
+
+.mw-root.phase-lobby-premium {
+  background: #000;
+}
+.mw-bg-premium-art {
+  position: absolute; inset: 0; z-index: 0;
+  background-image: url('/bg-werewolf.png');
+  background-size: cover; background-position: center;
+  /* Darken edges slightly so text pops */
+  box-shadow: inset 0 0 150px rgba(0,0,0,0.9);
+}
+.mw-bg-premium-art::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at center, transparent 0%, rgba(5,5,5,0.85) 100%);
+}
+
+.mw-container-wide {
+  max-width: 900px; /* Wider for desktop split view */
+  z-index: 10;
+  position: relative;
+  display: flex; flex-direction: column; justify-content: center;
+}
+
+.mw-lobby-premium {
+  display: flex; flex-direction: column; gap: 40px; padding: 40px 24px;
+}
+@media (min-width: 768px) {
+  .mw-lobby-premium { flex-direction: row; align-items: center; justify-content: space-between; gap: 60px; height: 100%; }
+  .mw-lobby-left { width: 50%; }
+  .mw-lobby-right { width: 45%; max-width: 400px; }
+}
+
+.mw-eyebrow-pill {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.2em;
+  color: var(--moon-dim); text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.mw-title-huge {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(48px, 8vw, 72px);
+  line-height: 1.1; font-weight: 700;
+  color: #FFF; margin: 0 0 24px 0;
+  text-shadow: 0 10px 30px rgba(0,0,0,0.8);
+}
+
+.mw-subtitle-elegant {
+  font-size: 16px; line-height: 1.6; color: var(--moon-dim); margin: 0; max-width: 400px;
+}
+
+.mw-lobby-cards-stack { display: flex; flex-direction: column; gap: 16px; }
+
+/* Double-Bezel Glass Card */
+.mw-glass-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 2rem;
+  padding: 8px; /* Outer bezel gap */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1), background 0.4s ease;
+}
+.mw-glass-inner {
+  background: rgba(10, 15, 25, 0.6);
+  backdrop-filter: blur(24px);
+  border-radius: calc(2rem - 8px);
+  padding: 24px;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1), 0 10px 40px rgba(0,0,0,0.5);
+  transition: background 0.4s ease;
+  height: 100%;
+}
+.mw-glass-card:hover .mw-glass-inner { background: rgba(20, 25, 40, 0.8); }
+.mw-glass-card:active { transform: scale(0.97); }
+
+.mw-glass-panel {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 2rem;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mw-card-content {
+  display: flex; align-items: center; gap: 16px;
+}
+.mw-card-icon-wrap {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--moon);
+}
+.mw-card-text { flex: 1; }
+.mw-card-title { font-size: 18px; font-weight: 600; margin: 0 0 4px 0; color: #FFF; }
+.mw-card-desc { font-size: 13px; color: var(--moon-dim); margin: 0; line-height: 1.4; }
+
+.mw-card-arrow-wrap {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  display: flex; align-items: center; justify-content: center;
+  color: #FFF; font-size: 14px; transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.mw-lobby-text-premium { font-size: 14px; color: var(--moon-dim); line-height: 1.6; margin-bottom: 24px; }
+.mw-lobby-error-premium { color: var(--blood); font-size: 13px; margin-top: 16px; font-weight: 600; text-align: center; }
+
+.mw-input-premium {
+  width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px; padding: 16px; font-size: 15px; color: #FFF; outline: none;
+  transition: border-color 0.2s;
+}
+.mw-input-premium:focus { border-color: rgba(255,255,255,0.3); }
+
+/* Premium Button-in-Button CTA */
+.mw-btn-premium {
+  width: 100%;
+  background: #FFF; color: #000;
+  border-radius: 999px;
+  padding: 8px 8px 8px 24px;
+  display: flex; justify-content: space-between; align-items: center;
+  border: none; cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.mw-btn-premium:active { transform: scale(0.97); }
+.mw-btn-text { font-size: 15px; font-weight: 600; }
+.mw-btn-arrow-wrap {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(0,0,0,0.05);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.mw-link-btn-premium {
+  width: 100%; background: transparent; border: none; color: var(--moon-dim);
+  padding: 16px; font-size: 14px; cursor: pointer; margin-top: 8px; transition: color 0.2s;
+}
+.mw-link-btn-premium:hover { color: #FFF; }
+
+/* Fluid Motion (Entry) */
+.fade-up-hero { animation: fadeUpHero 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+.stagger-fade-up { animation: fadeUpHero 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s backwards; }
+@keyframes fadeUpHero {
+  from { opacity: 0; transform: translateY(40px); filter: blur(8px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}

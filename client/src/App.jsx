@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Moon, Shuffle, Plus, X, Scale, PawPrint, Crown, Ghost, Eye, EyeOff, Shield,
   FlaskConical, Target, Heart, User, Users, Sunrise, MessageCircle, Trophy,
-  Play, Pause, Lock, Trash2, Copy, Check, LogIn, DoorOpen,
+  Play, Pause, Lock, Trash2, Copy, Check, LogIn, DoorOpen, LogOut
 } from 'lucide-react';
 import { socket, saveSession, loadSession, clearSession, emitAck } from './socket.js';
 import VoiceChat from './VoiceChat.jsx';
@@ -63,57 +63,88 @@ function LobbyScreen({ onJoined }) {
   }
 
   return (
-    <div className="mw-lobby">
-      <div className="mw-header">
-        <div className="mw-header-inner">
-          <Moon size={24} className="mw-moon-icon" />
-          <div>
-            <h1 className="mw-display mw-title">Malam Serigala</h1>
-            <p className="mw-subtitle">Werewolf online — real-time</p>
-          </div>
-        </div>
-        <p className="mw-tagline">Buat room untuk jadi Pemandu, atau join room temanmu untuk main.</p>
+    <div className="mw-lobby-premium fade-up-hero">
+      <div className="mw-lobby-left">
+        <div className="mw-eyebrow-pill">ONLINE MULTIPLAYER</div>
+        <h1 className="mw-title-huge">Malam<br/>Serigala</h1>
+        <p className="mw-subtitle-elegant">Experience the ultimate game of deception, trust, and betrayal. Will you survive the night?</p>
       </div>
 
-      {!mode && (
-        <div className="mw-lobby-choice">
-          <button type="button" className="mw-lobby-card" onClick={() => setMode('create')}>
-            <DoorOpen size={22} />
-            <p className="mw-lobby-card-title">Buat Room</p>
-            <p className="mw-lobby-card-desc">Jadi Pemandu — atur peran & jalankan sesi.</p>
-          </button>
-          <button type="button" className="mw-lobby-card" onClick={() => setMode('join')}>
-            <LogIn size={22} />
-            <p className="mw-lobby-card-title">Join Room</p>
-            <p className="mw-lobby-card-desc">Masukkan kode room dari Pemandu.</p>
-          </button>
-        </div>
-      )}
+      <div className="mw-lobby-right stagger-fade-up">
+        {!mode && (
+          <div className="mw-lobby-cards-stack">
+            <div className="mw-glass-card hover-magnetic group" onClick={() => setMode('create')}>
+              <div className="mw-glass-inner">
+                <div className="mw-card-content">
+                  <div className="mw-card-icon-wrap"><DoorOpen size={24} strokeWidth={1.5} /></div>
+                  <div className="mw-card-text">
+                    <p className="mw-card-title">Buat Room</p>
+                    <p className="mw-card-desc">Jadi Pemandu, atur peran & jalan cerita.</p>
+                  </div>
+                  <div className="mw-card-arrow-wrap">
+                    <div className="mw-card-arrow">↗</div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-      {mode === 'create' && (
-        <div className="mw-panel mw-lobby-panel">
-          <p className="mw-eyebrow">Buat Room</p>
-          <p className="mw-lobby-text">Kamu akan jadi Pemandu (moderator) — mengatur komposisi peran dan menjalankan alur permainan. Pemandu tidak ikut sebagai pemain.</p>
-          <button type="button" className="mw-btn mw-btn-lg mw-btn-amber" disabled={busy} onClick={handleCreate}>
-            {busy ? 'Membuat...' : 'Buat Room Baru'}
-          </button>
-          <button type="button" className="mw-link-btn" onClick={() => setMode(null)}>Kembali</button>
-        </div>
-      )}
+            <div className="mw-glass-card hover-magnetic group" onClick={() => setMode('join')}>
+              <div className="mw-glass-inner">
+                <div className="mw-card-content">
+                  <div className="mw-card-icon-wrap"><LogIn size={24} strokeWidth={1.5} /></div>
+                  <div className="mw-card-text">
+                    <p className="mw-card-title">Join Room</p>
+                    <p className="mw-card-desc">Masukkan kode dari Pemandu untuk main.</p>
+                  </div>
+                  <div className="mw-card-arrow-wrap">
+                    <div className="mw-card-arrow">↗</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
-      {mode === 'join' && (
-        <div className="mw-panel mw-lobby-panel">
-          <p className="mw-eyebrow">Join Room</p>
-          <input className="mw-input" placeholder="Kode room (mis. AB12C)" value={code} onChange={(e) => setCode(e.target.value)} />
-          <input className="mw-input" style={{ marginTop: 8 }} placeholder="Nama kamu" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') handleJoin(); }} />
-          <button type="button" className="mw-btn mw-btn-lg mw-btn-amber" style={{ marginTop: 12 }} disabled={busy} onClick={handleJoin}>
-            {busy ? 'Bergabung...' : 'Join'}
-          </button>
-          <button type="button" className="mw-link-btn" onClick={() => setMode(null)}>Kembali</button>
-        </div>
-      )}
+        {mode === 'create' && (
+          <div className="mw-glass-panel">
+            <div className="mw-glass-inner">
+              <p className="mw-eyebrow-pill">BUAT ROOM</p>
+              <p className="mw-lobby-text-premium">Kamu akan bertindak sebagai Pemandu (Moderator). Siapkan strategi terbaik untuk pemainmu.</p>
+              
+              <button type="button" className="mw-btn-premium group" disabled={busy} onClick={handleCreate}>
+                <span className="mw-btn-text">{busy ? 'Membangkitkan...' : 'Mulai Sesi Baru'}</span>
+                <div className="mw-btn-arrow-wrap">
+                  <div className="mw-btn-arrow">↗</div>
+                </div>
+              </button>
+              <button type="button" className="mw-link-btn-premium" onClick={() => setMode(null)}>Batal</button>
+            </div>
+          </div>
+        )}
 
-      {error && <p className="mw-lobby-error">{error}</p>}
+        {mode === 'join' && (
+          <div className="mw-glass-panel">
+            <div className="mw-glass-inner">
+              <p className="mw-eyebrow-pill">JOIN ROOM</p>
+              
+              <div className="mw-input-group">
+                <input className="mw-input-premium" placeholder="Kode Room (mis. AB12C)" value={code} onChange={(e) => setCode(e.target.value)} />
+                <input className="mw-input-premium mt-3" placeholder="Nama Kamu" value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') handleJoin(); }} />
+              </div>
+
+              <button type="button" className="mw-btn-premium mt-6 group" disabled={busy} onClick={handleJoin}>
+                <span className="mw-btn-text">{busy ? 'Menyusup...' : 'Gabung Sekarang'}</span>
+                <div className="mw-btn-arrow-wrap">
+                  <div className="mw-btn-arrow">↗</div>
+                </div>
+              </button>
+              <button type="button" className="mw-link-btn-premium" onClick={() => setMode(null)}>Batal</button>
+            </div>
+          </div>
+        )}
+
+        {error && <p className="mw-lobby-error-premium">{error}</p>}
+      </div>
     </div>
   );
 }
@@ -723,6 +754,17 @@ export default function App() {
     setView(joinedView);
   }, []);
 
+  function handleLeaveRoom() {
+    if (window.confirm('Yakin ingin keluar dari room ini?')) {
+      if (view && !view.isModerator && view.viewerPlayerId) {
+        socket.emit('remove_player', { id: view.viewerPlayerId });
+      }
+      clearSession();
+      setView(null);
+      setCode(null);
+    }
+  }
+
   if (booting) {
     return (
       <div className="mw-root mw-loading">
@@ -734,8 +776,9 @@ export default function App() {
 
   if (!view) {
     return (
-      <div className="mw-root">
-        <div className="mw-container">
+      <div className="mw-root phase-lobby-premium">
+        <div className="mw-bg-premium-art" />
+        <div className="mw-container mw-container-wide">
           <LobbyScreenWrapper onJoined={(v, c) => { setView(v); }} setCode={setCode} />
         </div>
       </div>
@@ -749,7 +792,7 @@ export default function App() {
     <div className={`mw-root phase-${viewPhase} ${isNight ? 'is-night' : 'is-day'}`}>
       <div className="hago-bg-art" />
       <div className="mw-container">
-        <header className="mw-header">
+        <header className="mw-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div className="mw-header-inner">
             <Moon size={24} className="mw-moon-icon" />
             <div>
@@ -757,6 +800,9 @@ export default function App() {
               <p className="mw-subtitle">{view.isModerator ? 'Kamu Pemandu' : 'Werewolf online'}</p>
             </div>
           </div>
+          <button type="button" className="mw-btn-ghost" style={{ padding: '8px 12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }} onClick={handleLeaveRoom}>
+            <LogOut size={16} /> Keluar
+          </button>
         </header>
 
         {view.phase === 'setup' && <SetupScreen view={view} code={code} />}
