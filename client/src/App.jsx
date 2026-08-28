@@ -66,7 +66,7 @@ function LobbyScreen({ onJoined }) {
     <div className="mw-lobby-premium fade-up-hero">
       <div className="mw-lobby-left">
         <div className="mw-eyebrow-pill">ONLINE MULTIPLAYER</div>
-        <h1 className="mw-title-huge">Malam<br/>Serigala</h1>
+        <h1 className="mw-title-huge">Werewolf</h1>
         <p className="mw-subtitle-elegant">Game fitnah-fitnahan paling sus se-RT. Yakin lo bisa survive sampai pagi?</p>
       </div>
 
