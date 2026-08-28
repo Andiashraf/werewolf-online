@@ -860,14 +860,28 @@ function HagoPlayersColumn({ players, startNumber, view }) {
 
 function ChatAndVoiceBar({ view }) {
   const [msg, setMsg] = useState('');
+  const [visibleMessages, setVisibleMessages] = useState([]);
+  const lastMessageCount = useRef(0);
   
-  // Use persistent messages from DB/state (slice to get last N messages for the overlay)
-  const chatLog = (view.messages || []).slice(-15);
+  useEffect(() => {
+    const allMsgs = view.messages || [];
+    if (allMsgs.length > lastMessageCount.current) {
+      const newMsgs = allMsgs.slice(lastMessageCount.current).map(m => ({ ...m, localId: Math.random() }));
+      setVisibleMessages(prev => [...prev, ...newMsgs].slice(-15));
+      
+      newMsgs.forEach(m => {
+        setTimeout(() => {
+          setVisibleMessages(prev => prev.filter(x => x.localId !== m.localId));
+        }, 5000);
+      });
+    }
+    lastMessageCount.current = allMsgs.length;
+  }, [view.messages]);
 
   const myPlayer = view.players?.find(p => p.id === view.viewerPlayerId);
   const isDead = myPlayer ? !myPlayer.alive : false;
-  // Can chat if moderator, if game over, if in lobby/setup, or if ALIVE.
-  const canChat = view.isModerator || view.phase === 'game_over' || view.phase === 'lobby' || view.phase === 'setup' || !isDead;
+  // Hanya Moderator yang diizinkan menggunakan text chat sebagai Announcement
+  const canChat = view.isModerator;
 
   function sendChat() {
     if (!msg.trim()) return;
@@ -878,8 +892,8 @@ function ChatAndVoiceBar({ view }) {
   return (
     <>
       <div className="hago-chat-overlay">
-        {chatLog.map((c, i) => (
-          <div key={i} className="hago-chat-msg">
+        {visibleMessages.map((c) => (
+          <div key={c.localId} className="hago-chat-msg" style={{ animation: 'fadeIn 0.2s ease-out' }}>
             <span className={`hago-chat-name ${c.isModerator ? 'mod' : ''} ${c.isDead ? 'dead' : ''}`}>
               {c.senderName}:
             </span>
@@ -902,7 +916,7 @@ function ChatAndVoiceBar({ view }) {
           </div>
         ) : (
           <div className="hago-chat-input-wrap" style={{ opacity: 0.5, justifyContent: 'center' }}>
-            <span style={{ fontSize: '13px', fontStyle: 'italic', color: '#aaa' }}>Hantu tidak bisa bicara...</span>
+            <span style={{ fontSize: '13px', fontStyle: 'italic', color: '#aaa' }}>Hanya Pemandu yang bisa ketik pesan...</span>
           </div>
         )}
       </div>
