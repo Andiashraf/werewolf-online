@@ -14,7 +14,7 @@ export function redactForViewer(state, viewerPlayerId, isModerator) {
   const { roleConfig, players, game } = state;
 
   if (!game) {
-    return { phase: 'setup', roleConfig, players, isModerator, viewerPlayerId: viewerPlayerId || null };
+    return { phase: 'setup', roleConfig, players, isModerator, viewerPlayerId: viewerPlayerId || null, messages: state.messages || [] };
   }
 
   const viewerPlayer = viewerPlayerId ? game.players.find((p) => p.id === viewerPlayerId) : null;
@@ -28,6 +28,7 @@ export function redactForViewer(state, viewerPlayerId, isModerator) {
     winner: game.winner || null,
     isModerator,
     viewerPlayerId: viewerPlayerId || null,
+    messages: state.messages || [],
   };
 
   if (isModerator) {

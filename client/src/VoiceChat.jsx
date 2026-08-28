@@ -77,10 +77,12 @@ export default function VoiceChat({ view, myPlayerId }) {
     socket.on('webrtc_signal', handleSignal);
     
     // Auto-connect to existing players
-    const others = view.players?.filter(p => p.id !== myPlayerId) || [];
-    others.forEach(p => {
-      if (!peersRef.current[p.id]) {
-        createPeer(p.id, true); // Create and send offer
+    const others = view.players?.map(p => p.id).filter(id => id !== myPlayerId) || [];
+    if (!view.isModerator) others.push('MODERATOR');
+
+    others.forEach(id => {
+      if (!peersRef.current[id]) {
+        createPeer(id, true); // Create and send offer
       }
     });
 

@@ -322,14 +322,19 @@ io.on('connection', (socket) => {
     let targetSocketId = null;
     for (const [sId, sToken] of room.sockets.entries()) {
       const id = identityForToken(room, sToken);
-      if (id && id.playerId === targetPlayerId) {
-        targetSocketId = sId;
-        break;
+      if (id) {
+        if (targetPlayerId === 'MODERATOR' && id.isModerator) {
+          targetSocketId = sId;
+          break;
+        } else if (id.playerId === targetPlayerId) {
+          targetSocketId = sId;
+          break;
+        }
       }
     }
     if (targetSocketId) {
       io.to(targetSocketId).emit('webrtc_signal', { 
-        senderPlayerId: senderIdentity?.playerId, 
+        senderPlayerId: senderIdentity?.isModerator ? 'MODERATOR' : senderIdentity?.playerId, 
         signal 
       });
     }
@@ -342,6 +347,16 @@ io.on('connection', (socket) => {
     if (room) room.sockets.delete(socket.id);
   });
 });
+
+// --- Global Timer Loop ---
+setInterval(async () => {
+  for (const [code, room] of roomCache.entries()) {
+    if (room.gameState?.game?.phase === 'discussion' && room.gameState?.game?.discussionRunning) {
+      // dispatchAndBroadcast already handles saving and emitting
+      await dispatchAndBroadcast(code, room, { type: 'TICK_DISCUSSION' });
+    }
+  }
+}, 1000);
 
 initSchema()
   .then(() => {

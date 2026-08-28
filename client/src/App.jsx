@@ -888,7 +888,7 @@ function ChatAndVoiceBar({ view }) {
         ))}
       </div>
       <div className="hago-bottom-bar">
-        <VoiceChat view={view} myPlayerId={view.viewerPlayerId} />
+        <VoiceChat view={view} myPlayerId={view.isModerator ? 'MODERATOR' : view.viewerPlayerId} />
         {canChat ? (
           <div className="hago-chat-input-wrap">
             <input 
