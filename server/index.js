@@ -9,7 +9,7 @@ import cors from 'cors';
 import { initSchema } from './db.js';
 import {
   generateRoomCode, loadOrInitRoom, persistRoom, createModeratorIdentity,
-  createPlayerIdentity, identityForToken, nameTaken, applyAction, roomInMemory,
+  createPlayerIdentity, identityForToken, nameTaken, applyAction, roomInMemory, getAllRooms
 } from './rooms.js';
 import { redactForViewer } from './redact.js';
 import { ROLE_DEFS, parseBulkNames } from './game-logic.js';
@@ -350,7 +350,7 @@ io.on('connection', (socket) => {
 
 // --- Global Timer Loop ---
 setInterval(async () => {
-  for (const [code, room] of roomCache.entries()) {
+  for (const [code, room] of getAllRooms()) {
     if (room.gameState?.game?.phase === 'discussion' && room.gameState?.game?.discussionRunning) {
       // dispatchAndBroadcast already handles saving and emitting
       await dispatchAndBroadcast(code, room, { type: 'TICK_DISCUSSION' });

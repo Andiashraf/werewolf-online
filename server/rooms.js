@@ -30,6 +30,10 @@ export function roomInMemory(code) {
   return rooms.get(code);
 }
 
+export function getAllRooms() {
+  return rooms.entries();
+}
+
 export async function loadOrInitRoom(code) {
   if (rooms.has(code)) return rooms.get(code);
   const persisted = await loadRoom(code);
